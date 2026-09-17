@@ -1,0 +1,26 @@
+=== KET QUA CHAY TEST (Embedded Kafka) - Session11 / Ex04 ===
+Test: InventoryDlqTest.loiSau3LanRetryDuocDuaVaoDlqVaConsumerKhongBiKet
+Ket qua: tests=1  failures=0  errors=0
+
+--- 1) JSON sai dinh dang: retry 3 lan (moi lan cach 2s) roi moi vao DLQ ---
+19:20:55 WARN  KafkaConfig : Retry lan 1 that bai cho offset=0 key=ORD-BAD-JSON
+19:20:59 WARN  KafkaConfig : Retry lan 2 that bai cho offset=0 key=ORD-BAD-JSON
+19:21:03 WARN  KafkaConfig : Retry lan 3 that bai cho offset=0 key=ORD-BAD-JSON
+19:21:08 WARN  KafkaConfig : Retry lan 4 that bai cho offset=0 key=ORD-BAD-JSON
+
+--- 2) Log ERROR theo dung yeu cau REQ-02 ---
+19:21:08 ERROR KafkaConfig : Da nem don hang bi loi vao DLQ:
+    topic=storex-order-events partition=1 offset=0 key=ORD-BAD-JSON value=null
+
+--- 3) DLQ topic storex-order-events.DLQ nhan duoc ca 2 message loi ---
+>>> DLQ nhan duoc: key=ORD-BAD-JSON | value="eyJvcmRlcklkIjoiT1JELUJBRC1KU09OIiwicHJvZHVjdElkIjoiUDAwMSIsInF1YW50aXR5Ijoy"
+>>> DLQ nhan duoc: key=ORD-BAD-NULL | value={"orderId":"ORD-BAD-NULL","productId":null,"quantity":1}
+    (ORD-BAD-JSON: JSON sai dinh dang -> luu dang base64 cua nguyen ban
+     ORD-BAD-NULL: dung dinh dang nhung productId = null -> luu nguyen JSON)
+
+--- 4) Consumer KHONG bi ket: message hop le tiep theo van duoc xu ly ---
+>>> Consumer van xu ly duoc message hop le: P002 50 -> 45
+
+--- 5) BUG-05 da duoc xu ly ---
+spring.json.trusted.packages: "*"  (trong application.yml)
+=> Kafka cho phep deserialize object Java tu topic (khong con loi "The class is not in the trusted packages")

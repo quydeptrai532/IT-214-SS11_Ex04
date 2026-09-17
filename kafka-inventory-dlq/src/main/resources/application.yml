@@ -1,0 +1,26 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: kafka-inventory-dlq
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: inventory-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.storex.inventory.event.OrderEvent
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      ack-mode: record
+logging:
+  level:
+    org.springframework.kafka: INFO
+    com.storex.inventory: DEBUG
