@@ -55,3 +55,4 @@ Da nem don hang bi loi vao DLQ: topic=storex-order-events ... key=ORD-BAD-JSON
 >>> DLQ nhan duoc: key=ORD-BAD-NULL | value={"orderId":"ORD-BAD-NULL","productId":null,"quantity":1}
 >>> Consumer van xu ly duoc message hop le: P002 50 -> 45       (khong bi ket)
 ```
+a
